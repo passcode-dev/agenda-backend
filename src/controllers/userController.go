@@ -1,48 +1,55 @@
 package controllers
-/*
+
 import (
-	"fmt"
 	"net/http"
+
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
-func NewUserController(
-	userRepository repository.UserRepository,
-) UserControllerInterface {
-	return &userController{userRepository}
+type User struct {
+	Email    string `json:"email" binding:"required,email"`
+	Username string `json:"username" binding:"required,min=3,max=20"`
+	Password string `json:"password" binding:"required,min=8"`
 }
 
-type UserControllerInterface interface {
-	CreateUser(c *gin.Context)
-}
+var validate = validator.New()
 
-type userController struct {
-	userRepository repository.UserRepository
-}
 
-func (uc *userController) CreateUser(c *gin.Context) {
-	user := UserForm{}
+func CreateUser(c *gin.Context) {
+	var user models.User
 
 	if err := c.ShouldBindJSON(&user); err != nil {
-		errPerso := views.ParseError(
-			fmt.Sprintf("Error trying to parse user, error=%s", err),
-			http.StatusBadRequest,
-		)
-
-		c.JSON(errPerso.ErrorCode, errPerso)
+		c.JSON(http.StatusBadRequest, Response{
+			Status:  "error",
+			Message: "Invalid input",
+			Data:    gin.H{"details": err.Error()},
+		})
+		return
 	}
 
-	userModel := user.ConvertInputUserToUserEntity()
-	createdUser, err := uc.userRepository.CreateUser(userModel)
+	created, err := models.CreatedUser(&user)
 	if err != nil {
-		errPerso := views.ParseError(
-			fmt.Sprintf("Error trying to create user, error=%s", err),
-			http.StatusInternalServerError,
-		)
-
-		c.JSON(errPerso.ErrorCode, errPerso)
+		if err.Error() == "email already in use" {
+			c.JSON(http.StatusConflict, Response{
+				Status:  "error",
+				Message: err.Error(),
+			})
+		} else {
+			c.JSON(http.StatusInternalServerError, Response{
+				Status:  "error",
+				Message: "Failed to create user",
+				Data:    gin.H{"details": err.Error()},
+			})
+		}
+		return
 	}
 
-	c.JSON(http.StatusOK, views.ConvertUserIntoView(createdUser))
+	if created {
+		c.JSON(http.StatusCreated, Response{
+			Status:  "success",
+			Message: "User created successfully",
+			Data:    user,
+		})
+	}
 }
-*/

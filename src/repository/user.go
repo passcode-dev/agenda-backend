@@ -1,25 +1,43 @@
-package repository
+package repositories
 
 import (
-	"github.com/HunCoding/golang-architecture/mvc/src/models"
-	"go.mongodb.org/mongo-driver/mongo"
+	"errors"
+	"mvc/src/database"
+	"mvc/src/models"
 )
 
-func NewUserRepository(
-	mongodbClient *mongo.Client,
-) UserRepository {
-	return &userRepository{mongodbClient}
+
+func VerifyUserCreated(email string) (bool, error) {
+	var user models.User
+	err := database.DB.Where("email = ?", email).First(&user).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
+		return false, err
+	}
+
+	return true, nil
 }
 
-type UserRepository interface {
-	CreateUser(user *models.User) (*models.User, error)
-}
 
-type userRepository struct {
-	mongodbClient *mongo.Client
-}
+// Criação de um novo usuário
+func CreateUser(user *models.User) error {
+	// Verifica se o email já está cadastrado
+	exists, err := VerifyUserCreated(user.Email)
+	if err != nil {
+		return err // Retorna erro em caso de problemas no banco
+	}
 
-func (ur *userRepository) CreateUser(user *models.User) (*models.User, error) {
-	//TODO: Implement mongodb user insert
-	return nil, nil
+	if exists {
+		return errors.New("email already in use") // Retorna erro se o email já existe
+	}
+
+	// Cria o usuário no banco de dados
+	if err := database.DB.Create(user).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

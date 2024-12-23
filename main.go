@@ -2,12 +2,12 @@ package main
 
 import (
 	"mvc/src/routes"
-	"mvc/src/config"
+	"mvc/src/database"
 
 )
 
 func main() {
-	config.InitDB()
+	database.InitDB()
     router := routes.SetupRouter()
 	router.Run(":8080")
 }
