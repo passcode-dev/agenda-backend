@@ -1,9 +1,10 @@
-package repositories
+package repository
 
 import (
 	"errors"
-	"mvc/src/database"
-	"mvc/src/models"
+	"agenda-backend/src/database"
+	"agenda-backend/src/models"
+	"github.com/jinzhu/gorm"
 )
 
 

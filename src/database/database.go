@@ -8,7 +8,8 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 
-	"mvc/src/models"
+	"agenda-backend/src/models"
+	
 	
 )
 

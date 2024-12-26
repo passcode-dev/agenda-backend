@@ -1,8 +1,8 @@
 package main
 
 import (
-	"mvc/src/routes"
-	"mvc/src/database"
+	"agenda-backend/src/routes"
+	"agenda-backend/src/database"
 
 )
 

@@ -1,7 +1,7 @@
 package routes
 
 import (
-    "mvc/src/controllers"
+    "agenda-backend/src/controllers"
     "github.com/gin-gonic/gin"
 )
 
