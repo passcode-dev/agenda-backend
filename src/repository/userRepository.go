@@ -23,19 +23,17 @@ func VerifyUserCreated(email string) (bool, error) {
 }
 
 
-// Criação de um novo usuário
 func CreateUser(user *models.User) error {
-	// Verifica se o email já está cadastrado
+	
 	exists, err := VerifyUserCreated(user.Email)
 	if err != nil {
-		return err // Retorna erro em caso de problemas no banco
+		return err 
 	}
 
 	if exists {
-		return errors.New("email already in use") // Retorna erro se o email já existe
+		return errors.New("email already in use") 
 	}
 
-	// Cria o usuário no banco de dados
 	if err := database.DB.Create(user).Error; err != nil {
 		return err
 	}

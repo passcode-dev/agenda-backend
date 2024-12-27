@@ -7,24 +7,30 @@ import (
 )
 
 func CreatedUser(user *models.User) (bool, error) {
-	// Chama a função da camada repository
-	err := repository.CreateUser(user)
-	if err != nil {
-		if err.Error() == "email already in use" {
-			return false, err 
-		}
-		return false, err 
-	}
+    err := HashPassword(user) 
+    if err != nil {
+        return false, err
+    }
 
-	return true, nil 
+    err = repository.CreateUser(user) 
+    if err != nil {
+        if err.Error() == "email already in use" {
+            return false, err
+        }
+        return false, err
+    }
+
+    return true, nil
 }
+
 
 // Gerar hash da senha
-func HashPassword(u *models.User)  error {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
-	u.Password = string(hashedPassword)
-	return nil
+func HashPassword(u *models.User) error {
+    hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+    if err != nil {
+        return err
+    }
+    u.Password = string(hashedPassword) 
+    return nil
 }
+

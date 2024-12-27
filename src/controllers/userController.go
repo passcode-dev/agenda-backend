@@ -54,4 +54,6 @@ func CreateUser(c *gin.Context) {
 			Data:    user,
 		})
 	}
+
+	
 }

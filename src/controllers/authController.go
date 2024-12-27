@@ -1,53 +1,51 @@
 package controllers
 
 import (
-    "net/http"
-    "github.com/gin-gonic/gin"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"agenda-backend/src/models"
+	"agenda-backend/src/services"
+	"agenda-backend/src/utils"
 )
 
-type Login struct {
-    Username string `json:"username"`
-    Password string `json:"password"`
-}
-
-type Loginsucess struct {
-    Token string `json:"token"`
-}
-
-
-
 func AuthLogin(c *gin.Context) {
-	//var loginData Login
+	var user models.User
 
-    //user, err := models.VerifyUser(loginData.Username, loginData.Password)
-	/*
-    if err != nil {
+	// Realiza o binding e validação inicial
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, utils.Response{
+			Status:  "error",
+			Message: "Invalid input",
+			Data:    gin.H{"details": err.Error()},
+		})
+		return
+	}
 
-        c.JSON(http.StatusUnauthorized, utils.TypeErrorResponse{
-            Error: "Credenciais inválidas",
-        })
-        return
-    }
-    if user == nil {
-        c.JSON(http.StatusInternalServerError, utils.TypeErrorResponse{
-            Error: "Usuário não encontrado",
-        })
-        return
-    }
+	// Chama o serviço para validar os campos de login
+	if err := services.ValidateUserForLogin(&user); err != nil {
+		c.JSON(http.StatusBadRequest, utils.Response{
+			Status:  "error",
+			Message: "email or password invalid",
+            Data:    gin.H{"details": err.Error()},
+		})
+		return
+	}
 
-    token, err := utils.GenerateJWT(user.ID)
-    if err != nil {
+    // Autentica o usuário
+	authenticatedUser, err := services.AuthenticateUser(user.Email, user.Username, user.Password)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, utils.Response{
+			Status:  "error",
+			Message: err.Error(),
+		})
+		return
+	}
 
-        c.JSON(http.StatusInternalServerError, utils.TypeErrorResponse{
-            Error: "Falha ao gerar o token",
-        })
-        return
-    }
-
-    c.JSON(http.StatusOK, Loginsucess{
-        Token: token,
-    })*/
-
-	c.JSON(http.StatusOK, "ok")
-
+	// Login bem-sucedido
+	c.JSON(http.StatusOK, utils.Response{
+		Status:  "success",
+		Message: "Login successful",
+		Data:    authenticatedUser,
+	})
 }
