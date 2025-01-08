@@ -18,9 +18,15 @@ func SetupRouter() *gin.Engine {
 	})
 
     api := router.Group("/api")
+    
     api.POST("/login", controllers.AuthLogin)
-
     api.POST("/users", controllers.CreateUser)
+
+    students := api.Group("/students")
+
+    students.POST("", controllers.CadastrarAluno)
+	students.DELETE("", controllers.DeletarAluno)
+
     
 	/*api.POST("/users", controllers.CreateUser)
     api.Use(middlewares.AuthMiddleware())
