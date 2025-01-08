@@ -9,7 +9,7 @@ type Students struct {
 	ID          uint       `gorm:"primary_key" json:"id"`
 	Name        string     `gorm:"not null" json:"name"`
 	RG          string     `gorm:"not null" json:"rg"`
-	CPF         string     `gorm:"unique;not null" json:"cpf"`
+	CPF         string     `gorm:"not null" json:"cpf"`
 	BirthDate   string     `gorm:"not null" json:"birth_date"`
 	PhoneNumber string     `gorm:"not null" json:"phone_number"`
 	CreatedAt   time.Time  `gorm:"autoCreateTime" json:"created_at"` // Automático na criação

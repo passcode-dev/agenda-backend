@@ -10,3 +10,7 @@ func main() {
     router := routes.SetupRouter()
 	router.Run(":8080")
 }
+
+/*
+AJUSTAR UPDATE PARA VALIDAÇÃO DO CPF E MODEL EM VEZ DE MAP STRING
+

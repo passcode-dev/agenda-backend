@@ -1,45 +1,74 @@
+// src/routes/routes.go
 package routes
 
 import (
-    "agenda-backend/src/controllers"
-    "github.com/gin-gonic/gin"
-    "agenda-backend/src/utils"
+	"agenda-backend/src/controllers"
+	"agenda-backend/src/utils"
+	"github.com/gin-gonic/gin"
 )
 
 func SetupRouter() *gin.Engine {
-   
-    router := gin.Default()
-    router.Use(utils.CORSMiddleware())
+	// Inicializa o router
+	router := gin.Default()
+	
+	// Middleware para CORS
+	router.Use(utils.CORSMiddleware())
 
+	// Rota de teste
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "testando",
 		})
 	})
 
-    api := router.Group("/api")
-    
-    api.POST("/login", controllers.AuthLogin)
-    api.POST("/users", controllers.CreateUser)
+	// Rotas da API principal
+	api := router.Group("/api")
+	{
+		// Rotas relacionadas à autenticação e usuários
+		api.POST("/login", controllers.AuthLogin)
+		api.POST("/users", controllers.CreateUser)
 
-    students := api.Group("/students")
+		// Rotas relacionadas aos estudantes
+		students := api.Group("/students")
+		{
+			// Criar estudante
+			/*
+			{
+				"name": "Leonardo Silva",
+				"rg": "123456789",
+				"cpf": "98765412100",
+				"birth_date": "2006-01-02",
+				"phone_number": "11987654321"
+			}
+			*/
+			students.POST("", controllers.CadastrarAluno)
 
-    students.POST("", controllers.CadastrarAluno)
-	students.DELETE("", controllers.DeletarAluno)
+			// Deletar estudante
+			/*
+			{
+				"id": 1
+			}
+			*/
+			students.DELETE("", controllers.DeletarAluno)
 
-    
-	/*api.POST("/users", controllers.CreateUser)
-    api.Use(middlewares.AuthMiddleware())
-    {
-        api.GET("/current-key", controllers.GetCurrentKey)
-        api.GET("/keys", controllers.ListKeys)
+			// Listar estudantes com paginação
+			///students?page=1
+			students.GET("", controllers.GetStudents)
 
-        api.GET("/users", controllers.ListUsers) 
-        api.PUT("/users/:id", controllers.UpdateUser) 
-        api.DELETE("/users/:id", controllers.DeleteUser) 
+			// Atualizar estudante
+			/*
+			{
+				"id": 1,
+				"name": "Leonardo Silva",
+				"rg": "123456789",
+				"cpf": "23541241141144411124100",
+				"birth_date": "2006-01-02",
+				"phone_number": "11987654321"
+			}
+			*/
+			students.PUT("", controllers.UpdateStudent)
+		}
+	}
 
-        api.POST("/decrypt", controllers.DecryptDocument) 
-    }*/
-
-    return router
+	return router
 }
