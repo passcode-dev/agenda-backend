@@ -3,7 +3,6 @@ package main
 import (
 	"agenda-backend/src/routes"
 	"agenda-backend/src/database"
-
 )
 
 func main() {

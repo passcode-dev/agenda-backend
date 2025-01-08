@@ -3,11 +3,13 @@ package routes
 import (
     "agenda-backend/src/controllers"
     "github.com/gin-gonic/gin"
+    "agenda-backend/src/utils"
 )
 
 func SetupRouter() *gin.Engine {
    
     router := gin.Default()
+    router.Use(utils.CORSMiddleware())
 
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
