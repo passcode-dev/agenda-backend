@@ -1,9 +1,9 @@
 package services
 
 import (
-	"errors"
 	"agenda-backend/src/models"
 	"agenda-backend/src/repository"
+	"errors"
 	"log"
 	"agenda-backend/src/utils"
 )
@@ -15,9 +15,9 @@ func ValidateAlunoForCreation(aluno *models.Students) error {
 		return errors.New("required fields are missing")
 	}
 
-	if aluno.cpf != ""{
+	if aluno.CPF != ""{
 
-		if err := validators.ValidateCPF(aluno.CPF); err != nil {
+		if err := utils.ValidateCPF(aluno.CPF); err != nil {
 			return err
 		}
 
