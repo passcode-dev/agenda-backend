@@ -13,5 +13,7 @@ func main() {
 
 /*
 AJUSTAR UPDATE PARA VALIDAÇÃO DO CPF E MODEL EM VEZ DE MAP STRING
+rota update teachers
+não dexar cpf dentcos cadastros
 */
 

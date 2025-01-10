@@ -68,6 +68,36 @@ func SetupRouter() *gin.Engine {
 			*/
 			students.PUT("", controllers.UpdateStudent)
 		}
+
+		// Rotas relacionadas aos professores
+		teachers := api.Group("/teachers")
+		{
+			// Criar professor
+			/*
+			{
+				"name": "Carlos Oliveira",
+				"cpf": "98765412100",
+				"birth_date": "1980-01-15"
+			}
+			*/
+			teachers.POST("", controllers.CreateTeacher)
+
+			// Deletar professor
+			/*
+			{
+				"id": 1
+			}
+			*/
+			teachers.DELETE("", controllers.SoftDeleteTeacher)
+
+			// Listar professores com paginação
+			///teachers?page=1
+			teachers.GET("", controllers.GetAllTeachers)
+
+			// Buscar professor por ID
+			///teachers/:id
+			teachers.GET(":id", controllers.GetTeacherByID)
+		}
 	}
 
 	return router

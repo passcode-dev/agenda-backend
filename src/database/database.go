@@ -55,8 +55,8 @@ func InitDB() {
 	// Migrações automáticas
 	if err = DB.AutoMigrate(
 		&models.User{},
-		&models.Students{},/*
-		&models.Teacher{},
+		&models.Students{},
+		&models.Teachers{},/*
 		&models.Class{},
 		&models.Course{},
 		&models.StudentHasClass{},
