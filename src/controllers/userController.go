@@ -1,12 +1,13 @@
 package controllers
 
 import (
-	"net/http"
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"agenda-backend/src/models"
 	"agenda-backend/src/services"
 	"agenda-backend/src/utils"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type User struct {
@@ -16,7 +17,6 @@ type User struct {
 }
 
 var validate = validator.New()
-
 
 func CreateUser(c *gin.Context) {
 	var user models.User

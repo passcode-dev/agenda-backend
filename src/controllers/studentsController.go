@@ -1,15 +1,38 @@
 package controllers
 
 import (
-	"net/http"
 	"log"
+	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"agenda-backend/src/models"
 	"agenda-backend/src/services"
 	"agenda-backend/src/utils"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
+
+func GetStudentsByID(c *gin.Context) {
+	idParam := c.Query("id")
+
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, utils.Response{
+			Status:  "error",
+			Message: "Failed to retrieve students",
+			Data:    gin.H{"details": err.Error()},
+		})
+		return
+	}
+
+	students, err := services.GetStudentsByIDService(uint(id))
+
+	c.JSON(http.StatusOK, utils.Response{
+		Status:  "success",
+		Message: "students retrieved successfully",
+		Data:    students,
+	})
+}
 
 func CadastrarAluno(c *gin.Context) {
 	var aluno models.Students
@@ -80,14 +103,17 @@ func DeletarAluno(c *gin.Context) {
 
 func GetStudents(c *gin.Context) {
 	// Obtém o número da página dos parâmetros de query
-	pageQuery := c.Query("page")
+	id := c.DefaultQuery("id", "")
+	name := c.DefaultQuery("name", "")
+	rg := c.DefaultQuery("rg", "")
+	cpf := c.DefaultQuery("cpf", "")
+	phone := c.DefaultQuery("phone", "")
+
+	pageQuery := c.DefaultQuery("page", "1")
 	page, err := strconv.Atoi(pageQuery)
-	if err != nil || page < 1 {
-		page = 1 // Página padrão
-	}
 
 	// Chama o serviço para obter os estudantes
-	students, err := services.GetAllStudents(page)
+	students, err := services.GetAllStudents(id, name, rg, cpf, phone, page)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.Response{
 			Status:  "error",
@@ -104,7 +130,6 @@ func GetStudents(c *gin.Context) {
 		Data:    students,
 	})
 }
-
 
 func UpdateStudent(c *gin.Context) {
 	var payload struct {

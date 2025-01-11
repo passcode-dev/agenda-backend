@@ -1,9 +1,9 @@
 package services
 
 import (
-	"errors"
 	"agenda-backend/src/models"
 	"agenda-backend/src/repository"
+	"errors"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -27,9 +27,7 @@ func AuthenticateUser(email, username, password string) (map[string]interface{},
 
 	if err != nil {
 		if err.Error() == "record not found" {
-			return nil, errors.New("invalid credentials")
 		}
-		return nil, err
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {

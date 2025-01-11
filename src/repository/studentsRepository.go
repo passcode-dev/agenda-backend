@@ -1,10 +1,10 @@
 package repository
 
 import (
-	"time"
 	"agenda-backend/src/database"
 	"agenda-backend/src/models"
 	"log"
+	"time"
 )
 
 func VerifyStudentCreated(cpf string) (bool, error) {
@@ -12,9 +12,9 @@ func VerifyStudentCreated(cpf string) (bool, error) {
 
 	// Conta o número de registros com o CPF informado
 	err := database.DB.Model(&models.Students{}).
-	Where("cpf = ? AND deleted_at IS NULL", cpf).
-	Count(&count).Error
-	
+		Where("cpf = ? AND deleted_at IS NULL", cpf).
+		Count(&count).Error
+
 	if err != nil {
 		log.Printf("Erro ao verificar CPF %s no banco: %s", cpf, err)
 		return false, err // Retorna erro caso haja problemas na consulta
@@ -30,7 +30,15 @@ func VerifyStudentCreated(cpf string) (bool, error) {
 	return false, nil // CPF não existe
 }
 
+func GetStudentById(id uint) (*models.Students, error) {
+	log.Printf("ID recebido: %d", id)
+	var student models.Students
+	err := database.DB.Model(&models.Students{}).
+		Where("deleted_at IS NULL AND id = ?", id).
+		First(&student).Error
 
+	return &student, err
+}
 
 func CreateStudent(student *models.Students) error {
 	return database.DB.Create(student).Error
@@ -41,12 +49,32 @@ func UpdateDeletedAt(id uint) error {
 	return database.DB.Model(&models.Students{}).Where("id = ?", id).Update("deleted_at", &currentTime).Error
 }
 
-func GetStudents(page int) ([]models.Students, error) {
+func GetStudents(id, name, rg, cpf, phone string, page int) ([]models.Students, error) {
 	var students []models.Students
-	offset := (page - 1) * 10 // Calcula o offset com base na página atual
 
-	// Consulta com WHERE deleted_at IS NULL e LIMIT para paginação
-	err := database.DB.Where("deleted_at IS NULL").Limit(10).Offset(offset).Find(&students).Error
+	query := database.DB.Model(&models.Students{})
+
+	if id != "" {
+		query = query.Where("id = ?", id)
+	}
+	if name != "" {
+		query = query.Where("name LIKE ?", "%"+name+"%")
+	}
+	if rg != "" {
+		query = query.Where("rg = ?", rg)
+	}
+	if cpf != "" {
+		query = query.Where("cpf = ?", cpf)
+	}
+	if phone != "" {
+		query = query.Where("phone = ?", phone)
+	}
+
+	limit := 10
+	offset := (page - 1) * limit
+	query = query.Limit(limit).Offset(offset)
+
+	err := query.Find(&students).Error
 	if err != nil {
 		return nil, err
 	}

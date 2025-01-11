@@ -4,20 +4,45 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
+	"agenda-backend/src/models"
 	"agenda-backend/src/services"
 	"agenda-backend/src/utils"
-	"agenda-backend/src/models"
+
+	"github.com/gin-gonic/gin"
 )
 
 func GetAllTeachers(c *gin.Context) {
-	pageQuery := c.Query("page")
-	page, err := strconv.Atoi(pageQuery)
-	if err != nil || page < 1 {
-		page = 1
+	id := c.Query("id")
+	name := c.Query("name")
+	cpf := c.Query("cpf")
+	email := c.Query("email")
+	phone := c.Query("phone")
+
+	var teacherID int
+	if id != "" {
+		var err error
+		teacherID, err = strconv.Atoi(id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, utils.Response{
+				Status:  "error",
+				Message: "Invalid ID format",
+				Data:    gin.H{"details": err.Error()},
+			})
+			return
+		}
 	}
 
-	teachers, err := services.GetAllTeachersService(page)
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, utils.Response{
+			Status:  "error",
+			Message: "Invalid page number",
+			Data:    gin.H{"details": err.Error()},
+		})
+		return
+	}
+
+	teachers, err := services.GetAllTeachersService(teacherID, name, cpf, email, phone, page)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.Response{
 			Status:  "error",
@@ -27,39 +52,11 @@ func GetAllTeachers(c *gin.Context) {
 		return
 	}
 
+	// Retorna a lista de professores
 	c.JSON(http.StatusOK, utils.Response{
 		Status:  "success",
 		Message: "Teachers retrieved successfully",
 		Data:    teachers,
-	})
-}
-
-func GetTeacherByID(c *gin.Context) {
-	idParam := c.Param("id")
-	id, err := strconv.Atoi(idParam)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, utils.Response{
-			Status:  "error",
-			Message: "Invalid ID",
-			Data:    gin.H{"details": err.Error()},
-		})
-		return
-	}
-
-	teacher, err := services.GetTeacherByIDService(uint(id))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, utils.Response{
-			Status:  "error",
-			Message: "Failed to retrieve teacher",
-			Data:    gin.H{"details": err.Error()},
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, utils.Response{
-		Status:  "success",
-		Message: "Teacher retrieved successfully",
-		Data:    teacher,
 	})
 }
 

@@ -3,9 +3,9 @@ package services
 import (
 	"agenda-backend/src/models"
 	"agenda-backend/src/repository"
+	"agenda-backend/src/utils"
 	"errors"
 	"log"
-	"agenda-backend/src/utils"
 )
 
 func ValidateAlunoForCreation(aluno *models.Students) error {
@@ -15,7 +15,7 @@ func ValidateAlunoForCreation(aluno *models.Students) error {
 		return errors.New("required fields are missing")
 	}
 
-	if aluno.CPF != ""{
+	if aluno.CPF != "" {
 
 		if err := utils.ValidateCPF(aluno.CPF); err != nil {
 			return err
@@ -23,6 +23,10 @@ func ValidateAlunoForCreation(aluno *models.Students) error {
 
 	}
 	return nil
+}
+
+func GetStudentsByIDService(id uint) (*models.Students, error) {
+	return repository.GetStudentById(id)
 }
 
 func CreateAlunoService(aluno *models.Students) error {
@@ -61,9 +65,13 @@ func CreateAlunoService(aluno *models.Students) error {
 func SoftDeleteAlunoService(id uint) error {
 	return repository.UpdateDeletedAt(id)
 }
-func GetAllStudents(page int) ([]models.Students, error) {
-	// Chama o repositório para obter os estudantes
-	return repository.GetStudents(page)
+func GetAllStudents(id, name, rg, cpf, phone string, page int) ([]models.Students, error) {
+	students, err := repository.GetStudents(id, name, rg, cpf, phone, page)
+	if err != nil {
+		return nil, err
+	}
+
+	return students, nil
 }
 
 func UpdateStudentService(id uint, updatedData map[string]interface{}) error {
