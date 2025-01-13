@@ -12,11 +12,11 @@ import (
 )
 
 func GetAllTeachers(c *gin.Context) {
-	id := c.Query("id")
-	name := c.Query("name")
-	cpf := c.Query("cpf")
-	email := c.Query("email")
-	phone := c.Query("phone")
+	id := c.DefaultQuery("id", "")
+	name := c.DefaultQuery("name", "")
+	cpf := c.DefaultQuery("cpf", "")
+	email := c.DefaultQuery("email", "")
+	phone := c.DefaultQuery("phone", "")
 
 	var teacherID int
 	if id != "" {

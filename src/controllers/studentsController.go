@@ -102,7 +102,6 @@ func DeletarAluno(c *gin.Context) {
 }
 
 func GetStudents(c *gin.Context) {
-	// Obtém o número da página dos parâmetros de query
 	id := c.DefaultQuery("id", "")
 	name := c.DefaultQuery("name", "")
 	rg := c.DefaultQuery("rg", "")
@@ -112,7 +111,6 @@ func GetStudents(c *gin.Context) {
 	pageQuery := c.DefaultQuery("page", "1")
 	page, err := strconv.Atoi(pageQuery)
 
-	// Chama o serviço para obter os estudantes
 	students, err := services.GetAllStudents(id, name, rg, cpf, phone, page)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.Response{
@@ -123,7 +121,6 @@ func GetStudents(c *gin.Context) {
 		return
 	}
 
-	// Retorna a lista de estudantes
 	c.JSON(http.StatusOK, utils.Response{
 		Status:  "success",
 		Message: "Students retrieved successfully",
