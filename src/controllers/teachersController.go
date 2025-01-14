@@ -4,13 +4,29 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gin-gonic/gin"
+
 	"agenda-backend/src/models"
 	"agenda-backend/src/services"
 	"agenda-backend/src/utils"
-
-	"github.com/gin-gonic/gin"
 )
 
+// GetAllTeachers busca todos os professores com base nos parâmetros de filtro.
+// @Summary      Get all teachers
+// @Description  Busca todos os professores com filtros opcionais (id, nome, cpf, email, telefone).
+// @Tags         Teachers
+// @Accept       json
+// @Produce      json
+// @Param        id    query   int    false  "ID do professor"
+// @Param        name  query   string false  "Nome do professor"
+// @Param        cpf   query   string false  "CPF do professor"
+// @Param        email query   string false  "Email do professor"
+// @Param        phone query   string false  "Telefone do professor"
+// @Param        page  query   int    false  "Página de resultados" default(1)
+// @Success      200   {object} utils.SuccessResponse{status=string,message=string,data=[]models.TeachersResponse}
+// @Failure      400   {object} utils.ErrorResponse{status=string,message=string}
+// @Failure      500   {object} utils.ErrorResponse{status=string,message=string}
+// @Router       /teachers [get]
 func GetAllTeachers(c *gin.Context) {
 	id := c.DefaultQuery("id", "")
 	name := c.DefaultQuery("name", "")
@@ -60,6 +76,17 @@ func GetAllTeachers(c *gin.Context) {
 	})
 }
 
+// CreateTeacher cria um novo professor.
+// @Summary      Create a new teacher
+// @Description  Cria um novo professor no sistema.
+// @Tags         Teachers
+// @Accept       json
+// @Produce      json
+// @Param        teacher  body   models.Teachers  true  "Dados do professor"
+// @Success      201   {object} utils.SuccessResponse{status=string,message=string,data=models.Teachers}
+// @Failure      400   {object} utils.ErrorResponse{status=string,message=string}
+// @Failure      500   {object} utils.ErrorResponse{status=string,message=string}
+// @Router       /teachers [post]
 func CreateTeacher(c *gin.Context) {
 	var teacher models.Teachers
 
@@ -88,6 +115,17 @@ func CreateTeacher(c *gin.Context) {
 	})
 }
 
+// SoftDeleteTeacher realiza a exclusão lógica de um professor.
+// @Summary      Soft delete a teacher
+// @Description  Exclui logicamente um professor no sistema.
+// @Tags         Teachers
+// @Accept       json
+// @Produce      json
+// @Param        id  body   uint  true  "ID do professor"
+// @Success      200   {object} utils.SuccessResponse{status=string,message=string}
+// @Failure      400   {object} utils.ErrorResponse{status=string,message=string}
+// @Failure      500   {object} utils.ErrorResponse{status=string,message=string}
+// @Router       /teachers/delete [post]
 func SoftDeleteTeacher(c *gin.Context) {
 	var payload struct {
 		ID uint `json:"id"`

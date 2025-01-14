@@ -1,11 +1,12 @@
 package main
 
 import (
-	"agenda-backend/src/routes"
 	"agenda-backend/src/database"
+	"agenda-backend/src/routes"
 )
 
 func main() {
+	
 	database.InitDB()
     router := routes.SetupRouter()
 	router.Run(":8080")

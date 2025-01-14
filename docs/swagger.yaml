@@ -1,0 +1,613 @@
+definitions:
+  models.Students:
+    properties:
+      birth_date:
+        type: string
+      cpf:
+        type: string
+      created_at:
+        description: Automático na criação
+        type: string
+      deleted_at:
+        description: Nulo na criação, atualizado manualmente
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      phone_number:
+        type: string
+      rg:
+        type: string
+      updated_at:
+        description: Nulo na criação, atualizado automaticamente
+        type: string
+    type: object
+  models.Teachers:
+    properties:
+      birth_date:
+        type: string
+      cpf:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.TeachersResponse:
+    properties:
+      birth_date:
+        type: string
+      cpf:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      password:
+        minLength: 8
+        type: string
+      username:
+        maxLength: 20
+        minLength: 3
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  models.UserCreate:
+    properties:
+      email:
+        example: usuario@example.com
+        type: string
+      password:
+        example: senhaSegura123
+        minLength: 8
+        type: string
+      username:
+        example: usuario123
+        maxLength: 20
+        minLength: 3
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  models.UserResponse:
+    properties:
+      email:
+        example: usuario@example.com
+        type: string
+      id:
+        example: 123
+        type: integer
+      password:
+        example: senhaSegura123
+        type: string
+      username:
+        example: usuario123
+        type: string
+    type: object
+  utils.ErrorResponse:
+    properties:
+      message:
+        type: string
+      status:
+        description: '"error"'
+        type: string
+    type: object
+  utils.Response:
+    properties:
+      data:
+        description: Dados opcionais, usado apenas para respostas de sucesso
+      message:
+        type: string
+      status:
+        description: '"success" ou "error"'
+        type: string
+    type: object
+  utils.SuccessResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      status:
+        description: '"success"'
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /students:
+    get:
+      consumes:
+      - application/json
+      description: Busca todos os alunos com filtros opcionais (id, nome, rg, cpf,
+        telefone).
+      parameters:
+      - description: ID do aluno
+        in: query
+        name: id
+        type: string
+      - description: Nome do aluno
+        in: query
+        name: name
+        type: string
+      - description: RG do aluno
+        in: query
+        name: rg
+        type: string
+      - description: CPF do aluno
+        in: query
+        name: cpf
+        type: string
+      - description: Telefone do aluno
+        in: query
+        name: phone
+        type: string
+      - default: 1
+        description: Página de resultados
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Students'
+                  type: array
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ErrorResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ErrorResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+      summary: Get all students
+      tags:
+      - Students
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo aluno no sistema.
+      parameters:
+      - description: Dados do aluno
+        in: body
+        name: student
+        required: true
+        schema:
+          $ref: '#/definitions/models.Students'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Students'
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ErrorResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "409":
+          description: Conflict
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ErrorResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ErrorResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+      summary: Create a new student
+      tags:
+      - Students
+  /students/delete:
+    post:
+      consumes:
+      - application/json
+      description: Exclui logicamente um aluno no sistema.
+      parameters:
+      - description: ID do aluno
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.SuccessResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ErrorResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ErrorResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+      summary: Soft delete a student
+      tags:
+      - Students
+  /students/update:
+    put:
+      consumes:
+      - application/json
+      description: Atualiza os dados de um aluno no sistema.
+      parameters:
+      - description: Dados do aluno
+        in: body
+        name: student
+        required: true
+        schema:
+          $ref: '#/definitions/models.Students'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.SuccessResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ErrorResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ErrorResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+      summary: Update student data
+      tags:
+      - Students
+  /teachers:
+    get:
+      consumes:
+      - application/json
+      description: Busca todos os professores com filtros opcionais (id, nome, cpf,
+        email, telefone).
+      parameters:
+      - description: ID do professor
+        in: query
+        name: id
+        type: integer
+      - description: Nome do professor
+        in: query
+        name: name
+        type: string
+      - description: CPF do professor
+        in: query
+        name: cpf
+        type: string
+      - description: Email do professor
+        in: query
+        name: email
+        type: string
+      - description: Telefone do professor
+        in: query
+        name: phone
+        type: string
+      - default: 1
+        description: Página de resultados
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.TeachersResponse'
+                  type: array
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ErrorResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ErrorResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+      summary: Get all teachers
+      tags:
+      - Teachers
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo professor no sistema.
+      parameters:
+      - description: Dados do professor
+        in: body
+        name: teacher
+        required: true
+        schema:
+          $ref: '#/definitions/models.Teachers'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Teachers'
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ErrorResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ErrorResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+      summary: Create a new teacher
+      tags:
+      - Teachers
+  /teachers/delete:
+    post:
+      consumes:
+      - application/json
+      description: Exclui logicamente um professor no sistema.
+      parameters:
+      - description: ID do professor
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.SuccessResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ErrorResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.ErrorResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+      summary: Soft delete a teacher
+      tags:
+      - Teachers
+  /user:
+    get:
+      consumes:
+      - application/json
+      description: Retorna um usuário com base no email, id ou nome de usuário
+      parameters:
+      - description: Email do usuário
+        in: query
+        name: email
+        type: string
+      - description: Nome de usuário
+        in: query
+        name: username
+        type: string
+      - description: ID do usuário
+        in: query
+        name: id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "404":
+          description: Usuário não encontrado
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: Obter usuário
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo usuáio no sistema
+      parameters:
+      - description: Dados do usuário
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.UserResponse'
+      summary: Criar usuário
+      tags:
+      - Users
+swagger: "2.0"

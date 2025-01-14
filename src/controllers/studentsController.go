@@ -12,28 +12,18 @@ import (
 	"agenda-backend/src/utils"
 )
 
-func GetStudentsByID(c *gin.Context) {
-	idParam := c.Query("id")
-
-	id, err := strconv.Atoi(idParam)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, utils.Response{
-			Status:  "error",
-			Message: "Failed to retrieve students",
-			Data:    gin.H{"details": err.Error()},
-		})
-		return
-	}
-
-	students, err := services.GetStudentsByIDService(uint(id))
-
-	c.JSON(http.StatusOK, utils.Response{
-		Status:  "success",
-		Message: "students retrieved successfully",
-		Data:    students,
-	})
-}
-
+// CadastrarAluno cria um novo aluno.
+// @Summary      Create a new student
+// @Description  Cria um novo aluno no sistema.
+// @Tags         Students
+// @Accept       json
+// @Produce      json
+// @Param        student  body   models.Students  true  "Dados do aluno"
+// @Success      201   {object} utils.SuccessResponse{status=string,message=string,data=models.Students}
+// @Failure      400   {object} utils.ErrorResponse{status=string,message=string}
+// @Failure      409   {object} utils.ErrorResponse{status=string,message=string}
+// @Failure      500   {object} utils.ErrorResponse{status=string,message=string}
+// @Router       /students [post]
 func CadastrarAluno(c *gin.Context) {
 	var aluno models.Students
 
@@ -71,7 +61,17 @@ func CadastrarAluno(c *gin.Context) {
 		Data:    aluno,
 	})
 }
-
+// DeletarAluno realiza a exclusão lógica de um aluno.
+// @Summary      Soft delete a student
+// @Description  Exclui logicamente um aluno no sistema.
+// @Tags         Students
+// @Accept       json
+// @Produce      json
+// @Param        id  body   uint  true  "ID do aluno"
+// @Success      200   {object} utils.SuccessResponse{status=string,message=string}
+// @Failure      400   {object} utils.ErrorResponse{status=string,message=string}
+// @Failure      500   {object} utils.ErrorResponse{status=string,message=string}
+// @Router       /students/delete [post]
 func DeletarAluno(c *gin.Context) {
 	var payload struct {
 		ID uint `json:"id"`
@@ -100,7 +100,22 @@ func DeletarAluno(c *gin.Context) {
 		Message: "Aluno deleted successfully",
 	})
 }
-
+// GetStudents busca todos os alunos com base nos parâmetros de filtro.
+// @Summary      Get all students
+// @Description  Busca todos os alunos com filtros opcionais (id, nome, rg, cpf, telefone).
+// @Tags         Students
+// @Accept       json
+// @Produce      json
+// @Param        id    query   string  false  "ID do aluno"
+// @Param        name  query   string  false  "Nome do aluno"
+// @Param        rg    query   string  false  "RG do aluno"
+// @Param        cpf   query   string  false  "CPF do aluno"
+// @Param        phone query   string  false  "Telefone do aluno"
+// @Param        page  query   int     false  "Página de resultados" default(1)
+// @Success      200   {object} utils.SuccessResponse{status=string,message=string,data=[]models.Students}
+// @Failure      400   {object} utils.ErrorResponse{status=string,message=string}
+// @Failure      500   {object} utils.ErrorResponse{status=string,message=string}
+// @Router       /students [get]
 func GetStudents(c *gin.Context) {
 	id := c.DefaultQuery("id", "")
 	name := c.DefaultQuery("name", "")
@@ -127,7 +142,17 @@ func GetStudents(c *gin.Context) {
 		Data:    students,
 	})
 }
-
+// UpdateStudent atualiza os dados de um aluno.
+// @Summary      Update student data
+// @Description  Atualiza os dados de um aluno no sistema.
+// @Tags         Students
+// @Accept       json
+// @Produce      json
+// @Param        student  body   models.Students  true  "Dados do aluno"
+// @Success      200   {object} utils.SuccessResponse{status=string,message=string}
+// @Failure      400   {object} utils.ErrorResponse{status=string,message=string}
+// @Failure      500   {object} utils.ErrorResponse{status=string,message=string}
+// @Router       /students/update [put]
 func UpdateStudent(c *gin.Context) {
 	var payload struct {
 		ID          uint   `json:"id"`
