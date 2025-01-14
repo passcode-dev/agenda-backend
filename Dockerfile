@@ -1,12 +1,17 @@
-FROM golang:1.22.2-alpine
+FROM golang:1.23-alpine
 
+# Configurar o diretório de trabalho
 WORKDIR /app
 
-COPY agenda-backend/go.mod agenda-backend/go.sum ./
-RUN go mod download
+# Instalar ferramentas necessárias, incluindo uma versão estável do 'air'
+RUN apk add --no-cache git \
+    && go install github.com/cosmtrek/air@v1.41.0
 
-COPY agenda-backend .
-RUN ls /app  # Verificar o conteúdo do diretório
-RUN go build -o app .
+# Copiar os arquivos do projeto para o container
+COPY . .
 
-CMD ["./app"]
+# Verificar o conteúdo do diretório
+RUN ls /app
+
+# Comando para iniciar o servidor com o 'air'
+CMD ["air", "-c", ".air.toml"]

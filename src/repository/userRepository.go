@@ -12,7 +12,7 @@ import (
 
 
 func VerifyUserCreated(email string) (bool, error) {
-	var user models.UserCreate
+	var user models.User
 	err := database.DB.Where("email = ?", email).First(&user).Error
 
 	if err != nil {
@@ -53,7 +53,7 @@ func UpdateUser(user *models.UserUpdateRequest, id uint) error {
 	return database.DB.Model(&models.User{}).Where("id = ?", id).Updates(user).Error
 }
 
-func CreateUser(user *models.UserCreate) error {
+func CreateUser(user *models.User) error {
 	
 	exists, err := VerifyUserCreated(user.Email)
 	if err != nil {

@@ -24,7 +24,9 @@ func UpdateUser(user *models.UserUpdateRequest, id uint) (error) {
     return repository.UpdateUser(user, id)
 }
 
-func CreatedUser(user *models.UserCreate) (bool, error) {
+func CreatedUser(user *models.User) (bool, error) {
+
+    
     hashedPassword,err := utils.HashPassword(user.Password) 
 
     if err != nil {

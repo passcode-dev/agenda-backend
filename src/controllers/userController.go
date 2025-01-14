@@ -102,7 +102,9 @@ func UpdateUser(c *gin.Context) {
 // @Success      201     {object}  models.UserResponse
 // @Router       /user [post]
 func CreateUser(c *gin.Context) {
-	var user models.UserCreate
+	
+
+	var user models.User
 
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, utils.Response{

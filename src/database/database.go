@@ -32,7 +32,7 @@ func InitDB() {
 	// Implementação da lógica de Retry
 	retries := 5
 	for retries > 0 {
-		DB, err = gorm.Open("mysql", "teste:1234@tcp(localhost:3306)/mydatabase?charset=utf8mb4&parseTime=True&loc=Local")
+		DB, err = gorm.Open("mysql", "teste:1234@tcp(db:3306)/mydatabase?charset=utf8mb4&parseTime=True&loc=Local")
 		if err == nil && DB != nil {
 			log.Println("Conexão com o banco de dados estabelecida.")
 			break
@@ -56,13 +56,13 @@ func InitDB() {
 	if err = DB.AutoMigrate(
 		&models.User{},
 		&models.Students{},
-		&models.Teachers{}, /*
-			&models.Class{},
-			&models.Course{},
+		&models.Teachers{},
+			&models.Subjects{},
+			&models.TeacherHasSubjects{}/*
 			&models.StudentHasClass{},
 			&models.StudentHasCourse{},
-			&models.TeacherHasCourse{},
-			&models.TeacherHasClass{},*/
+			&models.TeacherHasClass{}, 
+			&models.Class{}*/
 	).Error; err != nil {
 		log.Panic("Erro ao criar as tabelas do banco de dados:", err)
 	}
