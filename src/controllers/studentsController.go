@@ -3,13 +3,13 @@ package controllers
 import (
 	"log"
 	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
 
 	"agenda-backend/src/models"
 	"agenda-backend/src/services"
 	"agenda-backend/src/utils"
-	"strconv"
-
-	"github.com/gin-gonic/gin"
 )
 
 func GetStudentsByID(c *gin.Context) {

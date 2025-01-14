@@ -1,13 +1,14 @@
 package controllers
 
 import (
-	"agenda-backend/src/models"
-	"agenda-backend/src/services"
-	"agenda-backend/src/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+
+	"agenda-backend/src/models"
+	"agenda-backend/src/services"
+	"agenda-backend/src/utils"
 )
 
 type User struct {
@@ -17,6 +18,29 @@ type User struct {
 }
 
 var validate = validator.New()
+
+func GetUser(c *gin.Context) {
+	email := c.Param("email")
+	id := c.Param("id")
+	username := c.Param("username")
+
+
+	user, err := services.GetUser(email, id, username)
+	if err != nil {
+		c.JSON(http.StatusNotFound, utils.Response{
+			Status:  "error",
+			Message: "User not found",
+			Data:    gin.H{"details": err.Error()},
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, utils.Response{
+		Status:  "success",
+		Message: "User found",
+		Data:    user,
+	})
+}
 
 func CreateUser(c *gin.Context) {
 	var user models.User
