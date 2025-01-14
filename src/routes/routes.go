@@ -117,6 +117,9 @@ func SetupRouter() *gin.Engine {
 			// @Success      200   {array}   controllers.StudentResponse
 			// @Router       /students [get]
 			students.GET("", controllers.GetStudents)
+
+			students.GET("/:id", controllers.GetStudentID)
+
 		}
 
 		teachers := api.Group("/teachers")
@@ -149,6 +152,17 @@ func SetupRouter() *gin.Engine {
 			// @Success      200   {array}   controllers.TeacherResponse
 			// @Router       /teachers [get]
 			teachers.GET("", controllers.GetAllTeachers)
+		}
+
+		// Rotas relacionadas às matérias
+		subjects := api.Group("/subjects")
+		{
+			subjects.GET("", controllers.GetAllSubjects)                   // Listar matérias
+			subjects.POST("", controllers.CreateSubject)                   // Criar matéria
+			subjects.POST("/associate", controllers.AssociateTeacherToSubject) // Associar professor a matéria
+			subjects.DELETE("/teacher-subjects", controllers.DeleteTeacherSubjects) // Deletar associações de professores
+			subjects.DELETE("", controllers.DeleteSubject)                 // Deletar matéria
+			subjects.PUT("", controllers.UpdateSubject)                    // Atualizar matéria
 		}
 	}
     router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

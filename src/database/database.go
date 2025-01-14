@@ -58,7 +58,7 @@ func InitDB() {
 		&models.Students{},
 		&models.Teachers{},
 			&models.Subjects{},
-			&models.TeacherHasSubjects{}/*
+			&models.TeacherSubject{},/*
 			&models.StudentHasClass{},
 			&models.StudentHasCourse{},
 			&models.TeacherHasClass{}, 

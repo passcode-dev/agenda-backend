@@ -19,6 +19,8 @@ type User struct {
 	Password string `json:"password" binding:"required,min=8"`
 }
 
+
+
 var validate = validator.New()
 
 // @Summary      Obter usuário

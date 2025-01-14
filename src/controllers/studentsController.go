@@ -207,3 +207,54 @@ func UpdateStudent(c *gin.Context) {
 		Message: "Student updated successfully",
 	})
 }
+
+
+// GetStudentByID busca os dados de um aluno pelo ID.
+// @Summary      Get student by ID
+// @Description  Retorna os dados de um aluno com base no ID fornecido.
+// @Tags         Students
+// @Accept       json
+// @Produce      json
+// @Param        id  path   uint  true  "ID do aluno"
+// @Success      200  {object} utils.SuccessResponse{status=string,message=string,data=models.Students}
+// @Failure      400  {object} utils.ErrorResponse{status=string,message=string}
+// @Failure      404  {object} utils.ErrorResponse{status=string,message=string}
+// @Failure      500  {object} utils.ErrorResponse{status=string,message=string}
+// @Router       /students/{id} [get]
+func GetStudentID(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, utils.Response{
+			Status:  "error",
+			Message: "Invalid ID format",
+			Data:    gin.H{"details": err.Error()},
+		})
+		return
+	}
+
+	student, err := services.GetStudentsByIDService(uint(id))
+	if err != nil {
+		if err.Error() == "record not found" {
+			c.JSON(http.StatusNotFound, utils.Response{
+				Status:  "error",
+				Message: "Student not found",
+				Data:    nil,
+			})
+		} else {
+			c.JSON(http.StatusInternalServerError, utils.Response{
+				Status:  "error",
+				Message: "Failed to retrieve student",
+				Data:    gin.H{"details": err.Error()},
+			})
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, utils.Response{
+		Status:  "success",
+		Message: "Student retrieved successfully",
+		Data:    student,
+	})
+}
+

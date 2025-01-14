@@ -86,3 +86,4 @@ func UpdateStudent(id uint, updatedData map[string]interface{}) error {
 	// Atualiza os campos especificados com base no ID
 	return database.DB.Model(&models.Students{}).Where("id = ?", id).Updates(updatedData).Error
 }
+
