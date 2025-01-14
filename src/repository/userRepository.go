@@ -2,14 +2,17 @@ package repository
 
 import (
 	"errors"
+	"log"
+
+	"github.com/jinzhu/gorm"
+
 	"agenda-backend/src/database"
 	"agenda-backend/src/models"
-	"github.com/jinzhu/gorm"
 )
 
 
 func VerifyUserCreated(email string) (bool, error) {
-	var user models.User
+	var user models.UserCreate
 	err := database.DB.Where("email = ?", email).First(&user).Error
 
 	if err != nil {
@@ -22,8 +25,35 @@ func VerifyUserCreated(email string) (bool, error) {
 	return true, nil
 }
 
+func GetUser(email string, id int, username string) ([]models.User, error) {
+    var users []models.User
 
-func CreateUser(user *models.User) error {
+    query := database.DB.Model(&models.User{})
+    if email != "" {
+        query = query.Where("email = ?", email)
+    }
+    if id != 0 {
+        query = query.Where("id = ?", id)
+    }
+    if username != "" {
+        query = query.Where("username = ?", username)
+    }
+
+    err := query.Find(&users).Error
+    if err != nil {
+        return nil, err
+    }
+
+	return users, nil
+}
+
+func UpdateUser(user *models.UserUpdateRequest, id uint) error {
+	log.Print(user, id)
+
+	return database.DB.Model(&models.User{}).Where("id = ?", id).Updates(user).Error
+}
+
+func CreateUser(user *models.UserCreate) error {
 	
 	exists, err := VerifyUserCreated(user.Email)
 	if err != nil {

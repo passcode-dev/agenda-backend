@@ -1,16 +1,36 @@
 package services
 
 import (
-	"golang.org/x/crypto/bcrypt"
-    "agenda-backend/src/repository"
+	"log"
+
 	"agenda-backend/src/models"
+	"agenda-backend/src/repository"
+	"agenda-backend/src/utils"
 )
 
-func CreatedUser(user *models.User) (bool, error) {
-    err := HashPassword(user) 
+func GetUser(email string, id int, username string) ([]models.User, error) {
+    return repository.GetUser(email, id, username)
+}
+
+func UpdateUser(user *models.UserUpdateRequest, id uint) (error) {
+    hashedPassword ,err := utils.HashPassword(user.Password)
+
+    if err != nil {
+        return  err
+    }
+
+    user.Password = hashedPassword
+    log.Print("user.Password ", user.Password)
+    return repository.UpdateUser(user, id)
+}
+
+func CreatedUser(user *models.UserCreate) (bool, error) {
+    hashedPassword,err := utils.HashPassword(user.Password) 
+
     if err != nil {
         return false, err
     }
+    user.Password = hashedPassword
 
     err = repository.CreateUser(user) 
     if err != nil {
@@ -22,15 +42,3 @@ func CreatedUser(user *models.User) (bool, error) {
 
     return true, nil
 }
-
-
-// Gerar hash da senha
-func HashPassword(u *models.User) error {
-    hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
-    if err != nil {
-        return err
-    }
-    u.Password = string(hashedPassword) 
-    return nil
-}
-
